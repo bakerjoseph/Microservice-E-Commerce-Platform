@@ -47,7 +47,7 @@ public class BasketRestController {
 
     @PatchMapping(value = "/{basketId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public Basket updateBasket(@PathVariable(required = true) String basketId,
+    public Basket updateBasketProducts(@PathVariable(required = true) String basketId,
             @RequestBody(required = true) List<Product> products) {
         Basket basket = redisRepository.opsForValue().get(basketId);
         basket.setProducts(products);
@@ -57,7 +57,7 @@ public class BasketRestController {
 
     @DeleteMapping(value = "/{basketId}/{productId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public void deleteBookFromBasket(@PathVariable(required = true) String basketId,
+    public void deleteProductFromBasket(@PathVariable(required = true) String basketId,
             @PathVariable(required = true) UUID productId) {
         Basket basket = redisRepository.opsForValue().get(basketId);
         basket.setProducts(
