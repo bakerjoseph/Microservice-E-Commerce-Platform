@@ -11,6 +11,7 @@ public class Product {
     @Id
     private UUID productGuid;
     private String name;
+    @Column(length = 4000)
     private String description;
     private String dimensions;
     private double weight;

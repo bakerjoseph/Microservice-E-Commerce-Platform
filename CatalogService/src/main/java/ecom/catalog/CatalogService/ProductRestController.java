@@ -18,7 +18,16 @@ public class ProductRestController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public void createProduct(@RequestBody Product product) {
         product.setProductGuid(UUID.randomUUID());
+        product.setAmount(1);
         productRepository.save(product);
+    }
+
+    @PostMapping(path = "/bulkAdd")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void bulkAddProducts(@RequestBody List<Product> products) {
+        products.forEach(product -> product.setProductGuid(UUID.randomUUID()));
+        products.forEach(product -> product.setAmount(1));
+        productRepository.saveAll(products);
     }
 
     @GetMapping(path = "")
@@ -30,7 +39,7 @@ public class ProductRestController {
     @GetMapping(path = "/search/{searchText}")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Product> getProductsBySearch(@PathVariable(required = true) String searchText) {
-        return productRepository.findByNameLikeOrDescriptionLikeAllIgnoreCase(searchText, searchText);
+        return productRepository.findByNameContainingOrDescriptionContainingAllIgnoreCase(searchText, searchText);
     }
 
     @GetMapping(path = "/{productGuid}")

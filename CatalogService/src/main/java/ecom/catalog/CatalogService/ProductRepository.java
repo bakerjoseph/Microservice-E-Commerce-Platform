@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ecom.catalog.CatalogService.POJO.Product;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-    List<Product> findByNameLikeOrDescriptionLikeAllIgnoreCase(String name, String description);
+    List<Product> findByNameContainingOrDescriptionContainingAllIgnoreCase(String name, String description);
 }
