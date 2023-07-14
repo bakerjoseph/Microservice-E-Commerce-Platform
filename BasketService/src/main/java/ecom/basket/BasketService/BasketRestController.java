@@ -1,7 +1,6 @@
 package ecom.basket.BasketService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,13 +26,10 @@ public class BasketRestController {
         else
             basket = redisRepository.opsForValue().get(basketId);
 
-        List<Product> allProducts = basket.getProducts();
-        for (Product p : allProducts) {
-            if (sameProduct(product, p))
-                p.setAmount(p.getAmount() + product.getAmount());
-            else
-                allProducts.add(product);
-        }
+        boolean exists = updateAmount(basket, product);
+        if (!exists)
+            basket.getProducts().add(product);
+
         redisRepository.opsForValue().set(basket.getBasketGuid(), basket);
 
         return basket;
@@ -60,9 +56,12 @@ public class BasketRestController {
     public void deleteProductFromBasket(@PathVariable(required = true) String basketId,
             @PathVariable(required = true) UUID productId) {
         Basket basket = redisRepository.opsForValue().get(basketId);
-        basket.setProducts(
-                basket.getProducts().stream().filter(b -> !b.getProductGuid().equals(productId))
-                        .collect(Collectors.toList()));
+        for (Product p : basket.getProducts()) {
+            if (p.getProductGuid().equals(productId))
+                p.setAmount(p.getAmount() - 1);
+            if (p.getAmount() == 0)
+                basket.getProducts().remove(p);
+        }
         redisRepository.opsForValue().set(basketId, basket);
     }
 
@@ -78,5 +77,17 @@ public class BasketRestController {
                 original.getDimensions().equals(added.getDimensions()) &&
                 original.getWeight() == added.getWeight() &&
                 original.getPrice() == added.getPrice();
+    }
+
+    private boolean updateAmount(Basket basket, Product product) {
+        boolean exists = false;
+        for (Product p : basket.getProducts()) {
+            if (sameProduct(product, p)) {
+                p.setAmount(p.getAmount() + product.getAmount());
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 }
