@@ -49,7 +49,7 @@ namespace CheckOutService.Controllers
         {
             try
             {
-                List<Order> orders = await _db.Orders.Where(x => x.userGuid == userGuid).ToListAsync();
+                List<Order> orders = await _db.Orders.Include(o => o.products).Include(o => o.user).Where(x => x.userGuid == userGuid).ToListAsync();
                 return Ok(new
                 {
                     Success = true,
@@ -70,7 +70,7 @@ namespace CheckOutService.Controllers
         {
             try
             {
-                Order? order = await _db.Orders.Where(x => x.orderGuid == orderGuid).FirstOrDefaultAsync();
+                Order? order = await _db.Orders.Include(o => o.products).Include(o => o.user).Where(x => x.orderGuid == orderGuid).FirstOrDefaultAsync();
                 return Ok(new
                 {
                     Success = true,
@@ -91,7 +91,7 @@ namespace CheckOutService.Controllers
         {
             try
             {
-                List<Order> orders = await _db.Orders.Include(o => o.products).ToListAsync();
+                List<Order> orders = await _db.Orders.Include(o => o.products).Include(o => o.user).ToListAsync();
                 return Ok(new
                 {
                     Success = true,
@@ -108,18 +108,18 @@ namespace CheckOutService.Controllers
 
         [HttpPut]
         [Route("{orderGuid}")]
-        public async Task<IActionResult> UpdateOrder(Guid orderGuid, Order order)
+        public async Task<IActionResult> UpdateOrder(Guid orderGuid, OrderDTO order)
         {
             try
             {
-                if (orderGuid != order.orderGuid) throw new Exception("Order Guids do not match");
-                _db.Orders.Update(order);
+                Order fullOrder = _mapper.Map<Order>(order);
+                _db.Orders.Update(fullOrder);
                 await _db.SaveChangesAsync();
                 return Ok(new
                 {
                     Success = true,
                     Message = "Order Updated Successfully",
-                    Order = order
+                    Order = fullOrder
                 });
             }
             catch (Exception ex)

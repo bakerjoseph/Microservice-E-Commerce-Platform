@@ -8,6 +8,8 @@ builder.Services.AddDbContext<CheckOutServiceDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("conn_checkoutservice_sqlserver"));
 });
 
+builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Add services to the container.

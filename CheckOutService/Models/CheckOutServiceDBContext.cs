@@ -6,12 +6,12 @@ namespace CheckOutService.Models
     {
         public CheckOutServiceDBContext()
         {
-            
+            this.Database.EnsureCreated();
         }
 
         public CheckOutServiceDBContext(DbContextOptions<CheckOutServiceDBContext> options) : base(options) 
-        { 
-
+        {
+            this.Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

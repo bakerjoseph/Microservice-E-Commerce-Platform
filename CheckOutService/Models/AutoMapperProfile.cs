@@ -8,6 +8,7 @@ namespace CheckOutService.Models
         {
             CreateMap<OrderDTO, Order>();
             CreateMap<ProductDTO, Product>();
+            CreateMap<UserDTO, User>();
         }
     }
 }
