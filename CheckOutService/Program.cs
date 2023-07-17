@@ -1,5 +1,6 @@
 using CheckOutService.Models;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Discovery.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDiscoveryClient(builder.Configuration);
 
 var app = builder.Build();
 
