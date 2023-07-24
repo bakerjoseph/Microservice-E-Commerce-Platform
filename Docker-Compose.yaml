@@ -1,0 +1,139 @@
+version: '3.8'
+
+networks:
+  netSEN300:
+    external: false
+
+services:
+  SEN300ECOMCatalogServiceDBSqlServer:
+    container_name: SEN300ECOMCatalogServiceDBSqlServer
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: always
+    hostname: SEN300ECOMCatalogServiceDBSqlServer
+    ports:
+      - "1500:1433"
+    networks:
+      - netSEN300
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=abc123!!@
+  SEN300ECOMBasketServiceDBRedis:
+    container_name: SEN300ECOMBasketServiceDBRedis
+    image: redis:latest
+    restart: always
+    hostname: SEN300ECOMBasketServiceDBRedis
+    ports:
+      - "1501:6379"
+    networks:
+      - netSEN300
+  SEN300ECOMCheckOutServiceDBSqlServer:
+    container_name: SEN300ECOMCheckOutServiceDBSqlServer
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: always
+    hostname: SEN300ECOMCheckOutServiceDBSqlServer
+    ports:
+      - "1502:1433"
+    networks:
+      - netSEN300
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=abc123!!@
+  SEN300ECOMAccountServiceDBSqlServer:
+    container_name: SEN300ECOMAccountServiceDBSqlServer
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: always
+    hostname: SEN300ECOMAccountServiceDBSqlServer
+    ports:
+      - "1503:1433"
+    networks:
+      - netSEN300
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=abc123!!@
+  SEN300ECOMEurekaRegistry:
+    container_name: SEN300ECOMEurekaRegistry
+    image: steeltoeoss/eureka-server:latest
+    restart: always
+    hostname: SEN300ECOMEurekaRegistry
+    ports:
+      - "8761:8761"
+    networks:
+      - netSEN300
+  SEN300ECOMAPIGatewayOcelot:
+    container_name: SEN300ECOMAPIGatewayOcelot
+    build:
+      context: ./dotnet-apigateway-ocelot
+      dockerfile: Dockerfile
+    image: sen300ecomocelotgatewayapi:1
+    restart: always
+    hostname: SEN300ECOMAPIGatewayOcelot
+    ports:
+      - "5041:80"
+    networks:
+      - netSEN300
+    depends_on:
+      - SEN300ECOMEurekaRegistry
+  SEN300ECOMCatalogAPI:
+    container_name: SEN300ECOMCatalogAPI
+    build:
+      context: ./CatalogService
+      dockerfile: Dockerfile
+    image: sen300ecomcatalogapi:1
+    restart: always
+    hostname: SEN300ECOMCatalogAPI
+    ports:
+      - "7000:8080"
+    networks:
+      - netSEN300
+    depends_on:
+      - SEN300ECOMCatalogServiceDBSqlServer
+      - SEN300ECOMEurekaRegistry
+      - SEN300ECOMAPIGatewayOcelot
+  SEN300ECOMBasketAPI:
+    container_name: SEN300ECOMBasketAPI
+    build:
+      context: ./BasketService
+      dockerfile: Dockerfile
+    image: sen300ecombasketapi:1
+    restart: always
+    hostname: SEN300ECOMBasketAPI
+    ports:
+      - "7010:8080"
+    networks:
+      - netSEN300
+    depends_on:
+      - SEN300ECOMBasketServiceDBRedis
+      - SEN300ECOMEurekaRegistry
+      - SEN300ECOMAPIGatewayOcelot
+  SEN300ECOMCheckOutAPI:
+    container_name: SEN300ECOMCheckOutAPI
+    build:
+      context: ./CheckOutService
+      dockerfile: Dockerfile
+    image: sen300ecomcheckoutapi:1
+    restart: always
+    hostname: SEN300ECOMCheckOutAPI
+    ports:
+      - "7020:80"
+    networks:
+      - netSEN300
+    depends_on:
+      - SEN300ECOMCheckOutServiceDBSqlServer
+      - SEN300ECOMEurekaRegistry
+      - SEN300ECOMAPIGatewayOcelot
+  SEN300ECOMAccountAPI:
+    container_name: SEN300ECOMAccountAPI
+    build:
+      context: ./AccountService
+      dockerfile: Dockerfile
+    image: sen300ecomaccountapi:1
+    restart: always
+    hostname: SEN300ECOMAccountAPI
+    ports:
+      - "7030:80"
+    networks:
+      - netSEN300
+    depends_on:
+      - SEN300ECOMAccountServiceDBSqlServer
+      - SEN300ECOMEurekaRegistry
+      - SEN300ECOMAPIGatewayOcelot

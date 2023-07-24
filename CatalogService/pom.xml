@@ -51,6 +51,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>SEN300ECOMCatalogServiceAPI</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

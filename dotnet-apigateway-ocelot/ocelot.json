@@ -1,9 +1,9 @@
 {
   "Routes": [
     {
-      "ServiceName": "SEN300ECOMCatalogServiceAPI",
+      "ServiceName": "SEN300ECOMCatalogAPI",
       "DownstreamPathTemplate": "/{everything}",
-      "UpstreamPathTemplate": "/catalogserviceapi/{everything}",
+      "UpstreamPathTemplate": "/catalogapi/{everything}",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -20,9 +20,9 @@
       }
     },
     {
-      "ServiceName": "SEN300ECOMBasketServiceAPI",
+      "ServiceName": "SEN300ECOMBasketAPI",
       "DownstreamPathTemplate": "/{everything}",
-      "UpstreamPathTemplate": "/basketserviceapi/{everything}",
+      "UpstreamPathTemplate": "/basketapi/{everything}",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -39,9 +39,9 @@
       }
     },
     {
-      "ServiceName": "SEN300ECOMAccountServiceAPI",
+      "ServiceName": "SEN300ECOMAccountAPI",
       "DownstreamPathTemplate": "/{everything}",
-      "UpstreamPathTemplate": "/accountserviceapi/{everything}",
+      "UpstreamPathTemplate": "/accountapi/{everything}",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -58,9 +58,9 @@
       }
     },
     {
-      "ServiceName": "SEN300ECOMCheckOutServiceAPI",
+      "ServiceName": "SEN300ECOMCheckOutAPI",
       "DownstreamPathTemplate": "/{everything}",
-      "UpstreamPathTemplate": "/checkoutserviceapi/{everything}",
+      "UpstreamPathTemplate": "/checkoutapi/{everything}",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -78,7 +78,7 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://SEN300APIGatewayOcelot:8080",
+    "BaseUrl": "http://SEN300ECOMAPIGatewayOcelot:8080",
     "RequestIdKey": "OcRequestId",
     "DownstreamScheme": "http",
     "ReRoutesCaseSensitive": false,
