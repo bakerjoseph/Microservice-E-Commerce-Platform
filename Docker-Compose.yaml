@@ -98,7 +98,6 @@ services:
     restart: always
     ports:
       - "8080"
-      - "7000:8080"
     networks:
       - netSEN300
     depends_on:
@@ -116,7 +115,6 @@ services:
     restart: always
     ports:
       - "8080"
-      - "7010:8080"
     networks:
       - netSEN300
     depends_on:
@@ -134,7 +132,6 @@ services:
     restart: always
     ports:
       - "80"
-      - "7020:80"
     networks:
       - netSEN300
     depends_on:
@@ -152,7 +149,6 @@ services:
     restart: always
     ports:
       - "80"
-      - "7030:80"
     networks:
       - netSEN300
     depends_on:
