@@ -4,6 +4,14 @@ networks:
   netSEN300:
     external: false
 
+volumes:
+  mssqlcatalogdata:
+
+  mssqlorderdata:
+
+  mssqlaccountdata:
+
+
 services:
   SEN300ECOMCatalogServiceDBSqlServer:
     container_name: SEN300ECOMCatalogServiceDBSqlServer
@@ -17,6 +25,9 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=abc123!!@
+    volumes:
+      - mssqlcatalogdata:/var/opt/mssql
+      - ./SQL DB Scripts/CatalogServiceDB.sql:/docker-entrypoint-initdb.d/CatalogServiceDB.sql
   SEN300ECOMBasketServiceDBRedis:
     container_name: SEN300ECOMBasketServiceDBRedis
     image: redis:latest
@@ -38,6 +49,9 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=abc123!!@
+    volumes:
+      - mssqlorderdata:/var/opt/mssql
+      - ./SQL DB Scripts/CheckOutServiceDB.sql:/docker-entrypoint-initdb.d/CheckOutServiceDB.sql
   SEN300ECOMAccountServiceDBSqlServer:
     container_name: SEN300ECOMAccountServiceDBSqlServer
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -50,6 +64,9 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=abc123!!@
+    volumes:
+      - mssqlaccountdata:/var/opt/mssql
+      - ./SQL DB Scripts/AccountServiceDB.sql:/docker-entrypoint-initdb.d/AccountServiceDB.sql
   SEN300ECOMEurekaRegistry:
     container_name: SEN300ECOMEurekaRegistry
     image: steeltoeoss/eureka-server:latest
@@ -74,14 +91,13 @@ services:
     depends_on:
       - SEN300ECOMEurekaRegistry
   SEN300ECOMCatalogAPI:
-    container_name: SEN300ECOMCatalogAPI
     build:
       context: ./CatalogService
       dockerfile: Dockerfile
     image: sen300ecomcatalogapi:1
     restart: always
-    hostname: SEN300ECOMCatalogAPI
     ports:
+      - "8080"
       - "7000:8080"
     networks:
       - netSEN300
@@ -89,15 +105,17 @@ services:
       - SEN300ECOMCatalogServiceDBSqlServer
       - SEN300ECOMEurekaRegistry
       - SEN300ECOMAPIGatewayOcelot
+    deploy:
+      mode: replicated
+      replicas: 3
   SEN300ECOMBasketAPI:
-    container_name: SEN300ECOMBasketAPI
     build:
       context: ./BasketService
       dockerfile: Dockerfile
     image: sen300ecombasketapi:1
     restart: always
-    hostname: SEN300ECOMBasketAPI
     ports:
+      - "8080"
       - "7010:8080"
     networks:
       - netSEN300
@@ -105,15 +123,17 @@ services:
       - SEN300ECOMBasketServiceDBRedis
       - SEN300ECOMEurekaRegistry
       - SEN300ECOMAPIGatewayOcelot
+    deploy:
+      mode: replicated
+      replicas: 3
   SEN300ECOMCheckOutAPI:
-    container_name: SEN300ECOMCheckOutAPI
     build:
       context: ./CheckOutService
       dockerfile: Dockerfile
     image: sen300ecomcheckoutapi:1
     restart: always
-    hostname: SEN300ECOMCheckOutAPI
     ports:
+      - "80"
       - "7020:80"
     networks:
       - netSEN300
@@ -121,15 +141,17 @@ services:
       - SEN300ECOMCheckOutServiceDBSqlServer
       - SEN300ECOMEurekaRegistry
       - SEN300ECOMAPIGatewayOcelot
+    deploy:
+      mode: replicated
+      replicas: 3
   SEN300ECOMAccountAPI:
-    container_name: SEN300ECOMAccountAPI
     build:
       context: ./AccountService
       dockerfile: Dockerfile
     image: sen300ecomaccountapi:1
     restart: always
-    hostname: SEN300ECOMAccountAPI
     ports:
+      - "80"
       - "7030:80"
     networks:
       - netSEN300
@@ -137,3 +159,6 @@ services:
       - SEN300ECOMAccountServiceDBSqlServer
       - SEN300ECOMEurekaRegistry
       - SEN300ECOMAPIGatewayOcelot
+    deploy:
+      mode: replicated
+      replicas: 3
